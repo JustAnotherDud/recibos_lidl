@@ -88,8 +88,14 @@ h1 { font-size: clamp(24px,3.4vw,32px); font-weight: 600; margin: 4px 0 2px; }
 .empty { text-align:center; padding:40px 0; color: var(--text3); font-family: var(--mono); }
 
 /* ── KPI STATS (mirrors Baseline stat-row-4) ── */
-.stat-row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 24px 0 28px; }
+.stat-row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 24px 0 10px; }
 @media (max-width:760px){ .stat-row-4{ grid-template-columns: repeat(2,1fr); } }
+.stat-row-rates { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 28px; align-items: flex-end; }
+.stat-row-rates .msc { flex: 1 1 120px; min-width: 110px; max-width: 180px; }
+.rates-label { width: 100%; font-size: 11px; font-family: var(--mono); color: var(--text3); letter-spacing: .04em; padding: 4px 0 2px; text-transform: uppercase; }
+.rate-val { font-size: 18px !important; }
+.rate-unit { font-size: 11px; color: var(--text3); margin-left: 2px; font-family: var(--mono); }
+.rate-badge { margin-top: 4px; font-size: 10px; font-family: var(--mono); color: var(--accent); letter-spacing: .03em; }
 .msc {
   background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
   padding: 14px 16px; min-width:0;

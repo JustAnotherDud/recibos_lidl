@@ -128,7 +128,10 @@ function renderKPIs(rows) {
   const liquido = sum('total_liquido_mes');
   const completos = rows.filter(r => !r.mes_incompleto);
   const mediaLiq = completos.length ? completos.reduce((a, r) => a + (numOrNull(r.total_liquido_mes) || 0), 0) / completos.length : 0;
-  const taxaAtual = rows.length ? [...rows].sort((a, b) => (a.ano * 100 + a.mes_num) - (b.ano * 100 + b.mes_num)).slice(-1)[0].taxa_horaria_base : null;
+
+  const sorted = [...rows].sort((a, b) => (a.ano * 100 + a.mes_num) - (b.ano * 100 + b.mes_num));
+  const latest = sorted.slice(-1)[0] || null;
+  const taxaAtual = latest ? numOrNull(latest.taxa_horaria_base) : null;
 
   document.getElementById('kpiRow').innerHTML = `
     <div class="msc"><div class="lab">Total bruto</div><div class="val">${fmtEUR(bruto)}</div></div>
@@ -136,6 +139,39 @@ function renderKPIs(rows) {
     <div class="msc"><div class="lab">Média líquido / mês</div><div class="val">${fmtEUR(mediaLiq)}</div></div>
     <div class="msc"><div class="lab">€/hora atual</div><div class="val">${fmtRate(taxaAtual)}</div></div>
   `;
+
+  if (!taxaAtual || !latest) { document.getElementById('kpiRates').innerHTML = ''; return; }
+
+  const t = taxaAtual;
+  const mesRef = (latest.mes || '') + ' ' + (latest.ano || '');
+
+  // Sub. Almoço por dia: sub_almoco_eur / dias úteis estimados (horas / horas_diárias)
+  const horasSem = numOrNull(latest.carga_horaria_semanal) || 40;
+  const horasDia = horasSem / 5;
+  const horasMes = numOrNull(latest.horas_trabalhadas) || 0;
+  const diasUteis = horasDia > 0 ? horasMes / horasDia : 0;
+  const almocoDia = diasUteis > 0 ? (numOrNull(latest.sub_almoco_eur) || 0) / diasUteis : null;
+
+  const rates = [
+    ['Base', t, '/hora'],
+    ['TSD 1ª hora', t * 1.25, '/hora', '+25%'],
+    ['TSD 2ª hora+', t * 1.375, '/hora', '+37,5%'],
+    ['TSN', t * 1.50, '/hora', '+50%'],
+    ['Sub. Noturno', t * 0.25, '/hora', '+25%'],
+    ['Sub. Domingo', t * 1.00, '/hora', '+100%'],
+    ['Sub. Feriado', t * 1.00, '/hora', '+100%'],
+    almocoDia !== null ? ['Sub. Almoço', almocoDia, '/dia', null] : null,
+  ].filter(Boolean);
+
+  document.getElementById('kpiRates').innerHTML =
+    `<div class="rates-label">Taxas em vigor — ${mesRef}</div>` +
+    rates.map(([lab, val, unit, badge]) => `
+      <div class="msc rate-card">
+        <div class="lab">${lab}</div>
+        <div class="val rate-val">${fmtRate(val)}<span class="rate-unit">${unit}</span></div>
+        ${badge ? `<div class="rate-badge">${badge}</div>` : ''}
+      </div>
+    `).join('');
 }
 
 function labelFor(r) { return (r.mes || "").slice(0, 3) + "/" + String(r.ano).slice(2); }
