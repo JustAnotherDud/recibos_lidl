@@ -104,7 +104,8 @@ h1 { font-size: clamp(24px,3.4vw,32px); font-weight: 600; margin: 4px 0 2px; }
   background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
   padding: 18px 18px 8px; margin-bottom: 22px;
 }
-.panel h2 { font-size: 14px; font-weight: 600; color: var(--text2); margin: 0 0 14px; font-family: var(--sans); }
+.panel h2 { font-size: 14px; font-weight: 600; color: var(--text2); margin: 0; font-family: var(--sans); }
+.panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 12px; }
 canvas { max-width: 100%; }
 
 /* ── FILTERS (club-koms style) ── */

@@ -2,7 +2,7 @@ const { createClient } = supabase;
 let db = null;
 let RAW = [];
 let sortState = { key: "periodo", dir: 1 };
-let trendChart, stackChart;
+let trendChart, stackChart, stackMode = 'bruto';
 
 const MONTHS_PT = ["Janeiro","Fevereiro","Marco","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 
@@ -168,22 +168,43 @@ function renderTrendChart(rows) {
   });
 }
 
+function toggleStackMode() {
+  stackMode = stackMode === 'bruto' ? 'liquido' : 'bruto';
+  document.getElementById('stackToggle').textContent = stackMode === 'bruto' ? 'Ver líquido' : 'Ver bruto';
+  document.getElementById('stackTitle').textContent = stackMode === 'bruto' ? 'Composição do bruto, por mês' : 'Composição do líquido, por mês (descontos proporcionais)';
+  renderStackChart(filteredRows());
+}
+
 function renderStackChart(rows) {
   const sorted = [...rows].sort((a, b) => a.ano - b.ano || a.mes_num - b.mes_num);
   const ctx = document.getElementById('stackChart');
   const labels = sorted.map(labelFor);
   const series = [
+    ['Base', 'vencimento_base', '#a78bfa'],
     ['TSD', 'tsd_eur', '#4ade80'],
     ['TSN', 'tsn_eur', '#22c55e'],
     ['Domingo', 'sub_domingo_eur', '#60a5fa'],
     ['Feriado', 'sub_feriado_eur', '#3b82f6'],
     ['Noturno', 'sub_noturno_eur', '#1d4ed8'],
+    ['Sub. Almoço', 'sub_almoco_eur', '#34d399'],
     ['Outros', 'outros_eur', '#f87171'],
     ['Férias', 'sub_ferias_eur', '#fbbf24'],
     ['Natal', 'sub_natal_eur', '#fb923c'],
   ];
+
   const datasets = series.map(([label, key, color]) => ({
-    label, data: sorted.map(r => numOrNull(r[key]) || 0), backgroundColor: color
+    label,
+    data: sorted.map(r => {
+      const v = numOrNull(r[key]) || 0;
+      if (stackMode === 'liquido') {
+        const bruto = numOrNull(r.total_bruto_mes) || 0;
+        const liquido = numOrNull(r.total_liquido_mes) || 0;
+        const ratio = bruto !== 0 ? liquido / bruto : 1;
+        return parseFloat((v * ratio).toFixed(2));
+      }
+      return v;
+    }),
+    backgroundColor: color
   }));
 
   if (stackChart) stackChart.destroy();

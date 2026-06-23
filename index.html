@@ -64,7 +64,10 @@
     </section>
 
     <section class="panel">
-      <h2>Composição do bruto, por mês</h2>
+      <div class="panel-header">
+        <h2 id="stackTitle">Composição do bruto, por mês</h2>
+        <button class="btn btn-secondary btn-sm" id="stackToggle" onclick="toggleStackMode()">Ver líquido</button>
+      </div>
       <canvas id="stackChart" height="120"></canvas>
     </section>
 
