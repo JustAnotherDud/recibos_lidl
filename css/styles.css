@@ -139,7 +139,7 @@ thead th .seta::after { content:""; }
 thead th.sorted-asc .seta::after { content:" ▲"; color: var(--accent); }
 thead th.sorted-desc .seta::after { content:" ▼"; color: var(--accent); }
 tbody td {
-  padding: 8px; text-align:right; font-family: var(--mono); font-size:13px;
+  padding: 8px; text-align:right; font-family: var(--mono); font-size:13px; white-space:nowrap;
   border-bottom: 1px solid var(--border); color: var(--text);
 }
 tbody td:first-child { text-align:left; font-family: var(--sans); }
