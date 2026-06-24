@@ -145,12 +145,7 @@ function renderKPIs(rows) {
   const t = taxaAtual;
   const mesRef = (latest.mes || '') + ' ' + (latest.ano || '');
 
-  // Sub. Almoço por dia: sub_almoco_eur / dias úteis estimados (horas / horas_diárias)
-  const horasSem = numOrNull(latest.carga_horaria_semanal) || 40;
-  const horasDia = horasSem / 5;
-  const horasMes = numOrNull(latest.horas_trabalhadas) || 0;
-  const diasUteis = horasDia > 0 ? horasMes / horasDia : 0;
-  const almocoDia = diasUteis > 0 ? (numOrNull(latest.sub_almoco_eur) || 0) / diasUteis : null;
+  const almocoDia = numOrNull(latest.sub_almoco_taxa_dia);
 
   const rates = [
     ['Base', t, '/hora'],
