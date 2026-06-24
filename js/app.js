@@ -275,8 +275,8 @@ const TABLE_COLS = [
   { key: 'outros_eur',             fmt: fmtEUR,   neg: false },
   { key: 'sub_ferias_eur',         fmt: fmtEUR,   neg: false },
   { key: 'sub_natal_eur',          fmt: fmtEUR,   neg: false },
-  { key: 'ss_eur',                 fmt: fmtEUR,   neg: true  },
-  { key: 'irs_eur',                fmt: fmtEUR,   neg: true  },
+  { key: 'ss_eur',                 fmt: fmtEUR,   invert: true },
+  { key: 'irs_eur',                fmt: fmtEUR,   invert: true },
   { key: 'valor_mes',              fmt: fmtEUR,   neg: false },
   { key: 'total_bruto_mes',        fmt: fmtEUR,   neg: false },
   { key: 'total_liquido_mes',      fmt: fmtEUR,   neg: false },
@@ -300,9 +300,10 @@ function renderTable(rows) {
     <tr class="${r.mes_incompleto ? 'incomplete' : ''}">
       <td>${r.mes} ${r.ano}${r.mes_incompleto ? '<span class="pill">provisório</span>' : ''}</td>
       ${TABLE_COLS.map(c => {
-        const v = numOrNull(r[c.key]);
-        const isNeg = c.neg && (v || 0) < 0;
-        return `<td class="${isNeg ? 'neg' : ''}">${c.fmt(r[c.key])}</td>`;
+        const raw = numOrNull(r[c.key]);
+        const v = (c.invert && raw !== null) ? -raw : raw;
+        const isNeg = (v || 0) < 0;
+        return `<td class="${isNeg ? 'neg' : ''}">${c.fmt(v)}</td>`;
       }).join('')}
     </tr>
   `).join('') || `<tr><td colspan="${colspan}" class="empty">Sem meses para os filtros escolhidos.</td></tr>`;
