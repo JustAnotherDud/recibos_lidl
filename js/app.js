@@ -254,7 +254,30 @@ function renderStackChart(rows) {
   });
 }
 
-const TABLE_COLS = ['vencimento_base', 'taxa_horaria_base', 'tsd_eur', 'tsn_eur', 'sub_domingo_eur', 'sub_feriado_eur', 'sub_noturno_eur', 'outros_eur', 'sub_ferias_eur', 'sub_natal_eur', 'ss_eur', 'irs_eur', 'total_bruto_mes', 'total_liquido_mes'];
+function fmtHoras(v) {
+  if (v === null || v === undefined) return "—";
+  return Number(v).toFixed(1).replace(".", ",") + "h";
+}
+
+const TABLE_COLS = [
+  { key: 'vencimento_base',        fmt: fmtEUR,   neg: false },
+  { key: 'vencimento_mesatual_eur',fmt: fmtEUR,   neg: false },
+  { key: 'taxa_horaria_base',      fmt: fmtRate,  neg: false },
+  { key: 'horas_trabalhadas',      fmt: fmtHoras, neg: false },
+  { key: 'tsd_eur',                fmt: fmtEUR,   neg: false },
+  { key: 'tsn_eur',                fmt: fmtEUR,   neg: false },
+  { key: 'sub_domingo_eur',        fmt: fmtEUR,   neg: false },
+  { key: 'sub_feriado_eur',        fmt: fmtEUR,   neg: false },
+  { key: 'sub_noturno_eur',        fmt: fmtEUR,   neg: false },
+  { key: 'outros_eur',             fmt: fmtEUR,   neg: false },
+  { key: 'sub_ferias_eur',         fmt: fmtEUR,   neg: false },
+  { key: 'sub_natal_eur',          fmt: fmtEUR,   neg: false },
+  { key: 'ss_eur',                 fmt: fmtEUR,   neg: true  },
+  { key: 'irs_eur',                fmt: fmtEUR,   neg: true  },
+  { key: 'valor_mes',              fmt: fmtEUR,   neg: false },
+  { key: 'total_bruto_mes',        fmt: fmtEUR,   neg: false },
+  { key: 'total_liquido_mes',      fmt: fmtEUR,   neg: false },
+];
 
 function renderTable(rows) {
   const sorted = [...rows].sort((a, b) => {
@@ -269,14 +292,17 @@ function renderTable(rows) {
     if (th.dataset.key === sortState.key) th.classList.add(sortState.dir === 1 ? 'sorted-asc' : 'sorted-desc');
   });
 
+  const colspan = TABLE_COLS.length + 1;
   document.getElementById('ledgerBody').innerHTML = sorted.map(r => `
     <tr class="${r.mes_incompleto ? 'incomplete' : ''}">
       <td>${r.mes} ${r.ano}${r.mes_incompleto ? '<span class="pill">provisório</span>' : ''}</td>
-      <td>${fmtEUR(r.vencimento_base)}</td>
-      <td>${fmtRate(r.taxa_horaria_base)}</td>
-      ${TABLE_COLS.slice(2).map(c => `<td class="${(numOrNull(r[c]) || 0) < 0 ? 'neg' : ''}">${fmtEUR(r[c])}</td>`).join('')}
+      ${TABLE_COLS.map(c => {
+        const v = numOrNull(r[c.key]);
+        const isNeg = c.neg && (v || 0) < 0;
+        return `<td class="${isNeg ? 'neg' : ''}">${c.fmt(r[c.key])}</td>`;
+      }).join('')}
     </tr>
-  `).join('') || '<tr><td colspan="15" class="empty">Sem meses para os filtros escolhidos.</td></tr>';
+  `).join('') || `<tr><td colspan="${colspan}" class="empty">Sem meses para os filtros escolhidos.</td></tr>`;
 }
 
 document.querySelectorAll('#ledgerTable thead th').forEach(th => {
