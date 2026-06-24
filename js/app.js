@@ -147,15 +147,16 @@ function renderKPIs(rows) {
 
   const almocoDia = numOrNull(latest.sub_almoco_taxa_dia);
 
+  const ef = (key) => numOrNull(latest[key]);
   const rates = [
     ['Base', t, '/hora'],
-    ['TSD 1ª hora', t * 1.25, '/hora', '+25%'],
-    ['TSD 2ª hora+', t * 1.375, '/hora', '+37,5%'],
-    ['TSN', t * 1.50, '/hora', '+50%'],
-    ['Sub. Noturno', t * 0.25, '/hora', '+25%'],
-    ['Sub. Domingo', t * 1.00, '/hora', '+100%'],
-    ['Sub. Feriado', t * 1.00, '/hora', '+100%'],
-    almocoDia !== null ? ['Sub. Almoço', almocoDia, '/dia', null] : null,
+    ef('tsd_taxa_efetiva')            !== null ? ['TSD', ef('tsd_taxa_efetiva'), '/hora'] : null,
+    ef('tsn_taxa_efetiva')            !== null ? ['TSN', ef('tsn_taxa_efetiva'), '/hora'] : null,
+    ef('acrescimotsn_taxa_efetiva')   !== null ? ['Acrés. TSN', ef('acrescimotsn_taxa_efetiva'), '/hora'] : null,
+    ef('subnoturno_taxa_efetiva')     !== null ? ['Sub. Noturno', ef('subnoturno_taxa_efetiva'), '/hora'] : null,
+    ef('subdomingo_taxa_efetiva')     !== null ? ['Sub. Domingo', ef('subdomingo_taxa_efetiva'), '/hora'] : null,
+    ef('subferiado_taxa_efetiva')     !== null ? ['Sub. Feriado', ef('subferiado_taxa_efetiva'), '/hora'] : null,
+    almocoDia !== null                ? ['Sub. Almoço', almocoDia, '/dia'] : null,
   ].filter(Boolean);
 
   document.getElementById('kpiRates').innerHTML =
