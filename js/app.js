@@ -1,7 +1,7 @@
 const { createClient } = supabase;
 let db = null;
 let RAW = [];
-let sortState = { key: "periodo", dir: 1 };
+let sortState = { key: "periodo", dir: -1 };
 let trendChart, stackChart, stackMode = 'bruto';
 
 const MONTHS_PT = ["Janeiro","Fevereiro","Marco","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
