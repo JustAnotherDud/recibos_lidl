@@ -143,11 +143,14 @@ function renderKPIs(rows) {
   if (!taxaAtual || !latest) { document.getElementById('kpiRates').innerHTML = ''; return; }
 
   const t = taxaAtual;
-  const mesRef = (latest.mes || '') + ' ' + (latest.ano || '');
+  const latestComplete = completos.length
+    ? [...completos].sort((a, b) => (a.ano * 100 + a.mes_num) - (b.ano * 100 + b.mes_num)).slice(-1)[0]
+    : latest;
+  const mesRef = (latestComplete.mes || '') + ' ' + (latestComplete.ano || '');
 
-  const almocoDia = numOrNull(latest.sub_almoco_taxa_dia);
+  const almocoDia = numOrNull(latestComplete.sub_almoco_taxa_dia);
 
-  const ef = (key) => numOrNull(latest[key]);
+  const ef = (key) => numOrNull(latestComplete[key]);
   const rates = [
     ['Base', t, '/hora'],
     ef('tsd_taxa_efetiva')            !== null ? ['TSD', ef('tsd_taxa_efetiva'), '/hora'] : null,

@@ -69,7 +69,7 @@ body {
 .btn-sm { width:auto; padding:8px 14px; font-size:12px; font-family: var(--mono); }
 
 /* ── LAYOUT ── */
-.wrap, #app { max-width: 1180px; margin: 0 auto; }
+.wrap, #app { max-width: 1600px; margin: 0 auto; }
 header.top {
   display:flex; justify-content:space-between; align-items:flex-start;
   border-bottom:1px solid var(--border); padding-bottom:16px; margin-bottom:6px;
